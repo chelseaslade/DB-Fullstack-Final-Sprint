@@ -45,10 +45,12 @@ app.get("/", async (request, response) => {
   response.render("index/unauthenticatedIndex", {});
 });
 
+//Login
 app.get("/login", async (request, response) => {});
 
 app.post("/login", async (request, response) => {});
 
+//SignUp
 app.get("/signup", async (request, response) => {
   if (request.session.user?.id) {
     return response.redirect("/dashboard");
@@ -57,6 +59,7 @@ app.get("/signup", async (request, response) => {
   return response.render("signup", { errorMessage: null });
 });
 
+//Dashboard
 app.get("/dashboard", async (request, response) => {
   if (!request.session.user?.id) {
     return response.redirect("/");
@@ -67,8 +70,10 @@ app.get("/dashboard", async (request, response) => {
   return response.render("index/authenticatedIndex", { polls: [] });
 });
 
+//Profile
 app.get("/profile", async (request, response) => {});
 
+//Poll
 app.get("/createPoll", async (request, response) => {
   if (!request.session.user?.id) {
     return response.redirect("/");
@@ -89,6 +94,7 @@ app.post("/createPoll", async (request, response) => {
   //TODO: If an error occurs, what should we do?
 });
 
+//Mongo DB
 mongoose
   .connect(MONGO_URI)
   .then(() =>
