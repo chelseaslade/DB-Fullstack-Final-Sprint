@@ -47,7 +47,9 @@ app.get("/", async (request, response) => {
 });
 
 //Login
-app.get("/login", async (request, response) => {});
+app.get("/login", async (request, response) => {
+  return response.render("login", { errorMessage: null });
+});
 
 app.post("/login", async (request, response) => {});
 
