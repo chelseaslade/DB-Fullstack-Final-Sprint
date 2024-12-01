@@ -1,29 +1,30 @@
 <%- include('partials/header', { title: "Login" }) %>
+    <%- include('./partials/unauthNav.ejs') %>
 
-    <div class="main-content">
-        <h1>Login</h1>
-        <form action="/login" method="post" style="width: 300px;">
-            <% if (errorMessage) { %>
-                <p class="error-message">
-                    <%= errorMessage %>
-                </p>
-                <% } %>
-                    <div class="form-input-container">
-                        <label for="username">Username:</label>
-                        <input type="text" id="username" name="username" required>
-                    </div>
-                    <div class="form-input-container">
-                        <label for="password">Password:</label>
-                        <input type="password" id="password" name="password" required>
-                    </div>
-                    <button type="submit" class="action-button full-width">Login</button>
-        </form>
-        <p style="font-size: 12px; margin-top: 30px;">
-            Don't have an account yet?
-            <a href="/signup" class="register-link">Register!</a>
-        </p>
-    </div>
+        <div class="main-content">
+            <h1>Login</h1>
+            <form action="/login" method="post" style="width: 300px;">
+                <% if (errorMessage) { %>
+                    <p class="error-message">
+                        <%= errorMessage %>
+                    </p>
+                    <% } %>
+                        <div class="form-input-container">
+                            <label for="username">Username:</label>
+                            <input type="text" id="username" name="username" required>
+                        </div>
+                        <div class="form-input-container">
+                            <label for="password">Password:</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+                        <button type="submit" class="action-button full-width">Login</button>
+            </form>
+            <p style="font-size: 12px; margin-top: 30px;">
+                Don't have an account yet?
+                <a href="/signup" class="register-link">Register!</a>
+            </p>
+        </div>
 
-    </body>
+        </body>
 
-    </html>
+        </html>

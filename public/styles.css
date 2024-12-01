@@ -165,3 +165,38 @@ button.action-button:hover {
   color: rgba(93, 142, 251, 0.8);
   cursor: pointer;
 }
+
+/* Navigation */
+
+.navBar {
+  height: 40px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background-color: rgb(255, 255, 255);
+  margin-bottom: 20px;
+  margin-top: 80px;
+}
+
+.navBar ul {
+  display: flex;
+}
+
+.navBar li {
+  padding: 15px;
+  list-style: none;
+}
+
+.navBar a {
+  color: #152b5c;
+  text-decoration: none;
+}
+
+.navBar a:visited {
+  color: steelblue;
+}
+
+.navBar a:hover {
+  color: rgb(52, 54, 58);
+  transition: 0.7s;
+}
