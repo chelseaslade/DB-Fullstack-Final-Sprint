@@ -6,8 +6,16 @@ const session = require("express-session");
 const bcrypt = require("bcrypt");
 
 const PORT = 3000;
+
 //TODO: Update this URI to match your own MongoDB setup
 const MONGO_URI = "mongodb://localhost:27017/keyin_test";
+const userSchema = new mongoose.Schema({
+  username: { type: String, required: true },
+  password: { type: String, required: true },
+});
+
+const User = mongoose.model("User", userSchema);
+
 const app = express();
 expressWs(app);
 
@@ -38,12 +46,13 @@ app.ws("/ws", (socket, request) => {
   socket.on("close", async (message) => {});
 });
 
+//Render index if unauthenticated, redirect to dashboard if logged in
 app.get("/", async (request, response) => {
   if (request.session.user?.id) {
     return response.redirect("/dashboard");
   }
 
-  response.render("index/unauthenticatedIndex", {});
+  response.render("index/unauthenticatedIndex", { errorMessage: null });
 });
 
 //Login
@@ -51,7 +60,14 @@ app.get("/login", async (request, response) => {
   return response.render("login", { errorMessage: null });
 });
 
-app.post("/login", async (request, response) => {});
+app.post("/login", async (request, response) => {
+  //Obtain username and password from database
+
+  //Error logging in
+  return response
+    .status(400)
+    .render("login", { errorMessage: "Invalid login credentials." });
+});
 
 //SignUp
 app.get("/signup", async (request, response) => {
