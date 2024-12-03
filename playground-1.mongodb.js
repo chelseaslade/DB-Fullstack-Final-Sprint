@@ -3,7 +3,7 @@
 // Use Ctrl+Space inside a snippet or a string literal to trigger completions.
 
 const database = "FINALSPRINT_USERS";
-const collection = "SPRINT_COLLECTION";
+const collection = "users";
 
 // Create a new database.
 use(database);

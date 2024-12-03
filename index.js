@@ -8,7 +8,8 @@ const bcrypt = require("bcrypt");
 const PORT = 3000;
 
 //TODO: Update this URI to match your own MongoDB setup
-const MONGO_URI = "mongodb://localhost:27017/keyin_test";
+const MONGO_URI =
+  "mongodb+srv://chelseajslade:8qLRHx$$VzLgV%40i@maincluster.016yf.mongodb.net/FINALSPRINT_USERS";
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true },
   password: { type: String, required: true },
@@ -33,6 +34,21 @@ app.use(
   })
 );
 let connectedClients = [];
+
+async function seedUsers() {
+  try {
+    const userCount = await User.countDocuments();
+    if (userCount === 0) {
+      await User.insertMany([
+        { username: "Pip Cat", password: "pip123" },
+        { username: "Bif Cat", password: "bif123" },
+      ]);
+      console.log("Seeded user collection");
+    }
+  } catch (err) {
+    console.error("Error seeding users", err);
+  }
+}
 
 //Note: Not all routes you need are present here, some are missing and you'll need to add them yourself.
 
@@ -113,15 +129,23 @@ app.post("/createPoll", async (request, response) => {
   //TODO: If an error occurs, what should we do?
 });
 
-//Mongo DB
-mongoose
-  .connect(MONGO_URI)
-  .then(() =>
-    app.listen(PORT, () =>
-      console.log(`Server running on http://localhost:${PORT}`)
-    )
-  )
-  .catch((err) => console.error("MongoDB connection error:", err));
+//Mongo DB, server connection
+(async () => {
+  try {
+    await mongoose.connect(MONGO_URI);
+    console.log("MongoDB connected");
+
+    // Seed users after MongoDB connection
+    await seedUsers();
+
+    // Start the server
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+  } catch (err) {
+    console.error("Error connecting to MongoDB or seeding users:", err);
+  }
+})();
 
 /**
  * Handles creating a new poll, based on the data provided to the server
@@ -158,8 +182,3 @@ async function onNewVote(pollId, selectedOption) {
     console.error("Error updating poll:", error);
   }
 }
-
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
