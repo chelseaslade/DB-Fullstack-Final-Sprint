@@ -36,11 +36,12 @@ app.use(
 );
 let connectedClients = [];
 
-//Mostly for testing... Make sure function writes to DB
+//Mostly for testing... Make sure function writes to DB & can recognize users to login
 async function seedUsers() {
   try {
     const userCount = await User.countDocuments();
     if (userCount === 0) {
+      //Hash passwords
       const hashedPipPassword = await bcrypt.hash("pip123", saltRounds);
       const hashedBifPassword = await bcrypt.hash("bif123", saltRounds);
       await User.insertMany([
@@ -77,7 +78,11 @@ app.get("/", async (request, response) => {
 
 //Login
 app.get("/login", async (request, response) => {
-  return response.render("login", { errorMessage: null });
+  const successMessage = request.query.success
+    ? "Registration successful! Login with your new account: "
+    : null;
+
+  return response.render("login", { errorMessage: null, successMessage });
 });
 
 app.post("/login", async (request, response) => {
@@ -92,6 +97,7 @@ app.post("/login", async (request, response) => {
     if (!user) {
       return response.status(400).render("login", {
         errorMessage: "Error logging in - Invalid username",
+        successMessage: null,
       });
     }
     const validPassword = await bcrypt.compare(password, user.password);
@@ -100,6 +106,7 @@ app.post("/login", async (request, response) => {
     if (!validPassword) {
       return response.status(400).render("login", {
         errorMessage: "Error logging in - invalid password",
+        successMessage: null,
       });
     }
 
@@ -127,6 +134,21 @@ app.get("/signup", async (request, response) => {
   }
 
   return response.render("signup", { errorMessage: null });
+});
+
+app.post("/signup", async (request, response) => {
+  try {
+    const { username, password } = request.body;
+    await bcrypt.hash(password, saltRounds);
+    const newUser = new User({ username, password });
+    await newUser.save();
+    //Redirect to login page
+    response.redirect("/login?success=true");
+  } catch (err) {
+    response
+      .status(400)
+      .json({ errorMessage: "Error adding new user", details: err.message });
+  }
 });
 
 //Dashboard
@@ -171,7 +193,7 @@ app.post("/createPoll", async (request, response) => {
     await mongoose.connect(MONGO_URI);
     console.log("MongoDB connected");
 
-    // Seed users after MongoDB connection
+    // Seed test users after MongoDB connection
     await seedUsers();
 
     // Start the server
