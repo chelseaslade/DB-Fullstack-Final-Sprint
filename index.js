@@ -6,6 +6,7 @@ const session = require("express-session");
 const bcrypt = require("bcrypt");
 
 const PORT = 3000;
+const saltRounds = 10;
 
 //TODO: Update this URI to match your own MongoDB setup
 const MONGO_URI =
@@ -35,13 +36,16 @@ app.use(
 );
 let connectedClients = [];
 
+//Mostly for testing... Make sure function writes to DB
 async function seedUsers() {
   try {
     const userCount = await User.countDocuments();
     if (userCount === 0) {
+      const hashedPipPassword = await bcrypt.hash("pip123", saltRounds);
+      const hashedBifPassword = await bcrypt.hash("bif123", saltRounds);
       await User.insertMany([
-        { username: "Pip Cat", password: "pip123" },
-        { username: "Bif Cat", password: "bif123" },
+        { username: "pipcat", password: hashedPipPassword },
+        { username: "bifcat", password: hashedBifPassword },
       ]);
       console.log("Seeded user collection");
     }
@@ -77,12 +81,43 @@ app.get("/login", async (request, response) => {
 });
 
 app.post("/login", async (request, response) => {
-  //Obtain username and password from database
+  //Obtain username and password from login form
+  const { username, password } = request.body;
 
-  //Error logging in
-  return response
-    .status(400)
-    .render("login", { errorMessage: "Invalid login credentials." });
+  try {
+    //Check database for username
+    const user = await User.findOne({ username });
+
+    //If user doesn't exist
+    if (!user) {
+      return response.status(400).render("login", {
+        errorMessage: "Error logging in - Invalid username",
+      });
+    }
+    const validPassword = await bcrypt.compare(password, user.password);
+
+    //If password invalid
+    if (!validPassword) {
+      return response.status(400).render("login", {
+        errorMessage: "Error logging in - invalid password",
+      });
+    }
+
+    //Successful Login (create session & redirect to dashboard)
+    request.session.user = {
+      id: user._id,
+      username: user.username,
+    };
+
+    return response.redirect("/dashboard");
+  } catch (
+    err
+    //Error logging in
+  ) {
+    return response
+      .status(400)
+      .render("login", { errorMessage: "Invalid login credentials." });
+  }
 });
 
 //SignUp
@@ -100,9 +135,10 @@ app.get("/dashboard", async (request, response) => {
     return response.redirect("/");
   }
 
-  //TODO: Fix the polls, this should contain all polls that are active. I'd recommend taking a look at the
-  //authenticatedIndex template to see how it expects polls to be represented
-  return response.render("index/authenticatedIndex", { polls: [] });
+  return response.render("index/authenticatedIndex", {
+    username: request.session.user.username,
+    polls: [],
+  });
 });
 
 //Profile
