@@ -1,16 +1,13 @@
 body {
-  background: linear-gradient(
-    90deg,
-    rgba(93, 142, 251, 1) 0%,
-    rgba(93, 142, 251, 1) 50%,
-    rgba(0, 212, 255, 1) 100%
-  );
+  background-image: url(https://images.unsplash.com/photo-1695390470264-86847b15600b?q=80&w=2148&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D);
+  background-size: cover;
+  background-position: 25% 25%;
   height: 100%;
   padding: 0px;
   margin: 0px;
-  font-family: "Lato", sans-serif;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
   display: flex;
-  color: #f6f6f6;
+  color: rgb(137, 179, 205);
   flex-direction: column;
 }
 
@@ -61,7 +58,7 @@ body {
 
 .main-content button {
   border: none;
-  background: #f6f6f6;
+  background: rgb(175, 209, 230);
   padding: 6px;
   border-radius: 5px;
   cursor: pointer;
@@ -74,8 +71,8 @@ body {
 }
 
 .action-button {
-  background: #f6f6f6;
-  color: #5d8efb;
+  background: rgb(156, 203, 233);
+  color: white;
   text-decoration: none;
   padding: 5px 20px;
   border-radius: 5px;
@@ -86,7 +83,7 @@ body {
 
 .action-button:hover {
   background: rgba(246, 246, 246, 0.8);
-  color: rgba(93, 142, 251, 0.8);
+  color: rgb(139, 173, 194);
   cursor: pointer;
 }
 
@@ -101,7 +98,7 @@ body {
   font-size: 12px;
   text-decoration: none;
   background: #f6f6f6;
-  color: rgba(93, 142, 251, 1);
+  color: rgb(139, 173, 194);
   padding: 2px 5px;
   border-radius: 3px;
   display: inline-block;
@@ -110,7 +107,7 @@ body {
 }
 
 .register-link:hover {
-  background: rgba(93, 142, 251, 1);
+  background: rgb(139, 173, 194);
   color: #f6f6f6;
 }
 
@@ -170,7 +167,7 @@ button.action-button {
 
 button.action-button:hover {
   background: rgba(246, 246, 246, 0.8);
-  color: rgba(93, 142, 251, 0.8);
+  color: rgb(139, 173, 194);
   cursor: pointer;
 }
 
@@ -196,16 +193,16 @@ button.action-button:hover {
 }
 
 .navBar a {
-  color: #152b5c;
+  color: rgb(137, 179, 205);
   text-decoration: none;
 }
 
 .navBar a:visited {
-  color: steelblue;
+  color: rgb(137, 179, 205);
 }
 
 .navBar a:hover {
-  color: rgb(52, 54, 58);
+  color: rgb(88, 92, 100);
   transition: 0.7s;
 }
 
@@ -219,4 +216,5 @@ button.action-button:hover {
   background-color: rgb(255, 255, 255);
   margin-bottom: 20px;
   margin-top: 80px;
+  opacity: 30%;
 }
