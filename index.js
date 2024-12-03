@@ -187,6 +187,17 @@ app.post("/createPoll", async (request, response) => {
   //TODO: If an error occurs, what should we do?
 });
 
+//Logout
+app.post("/logout", (request, response) => {
+  //Destroy session
+  request.session.destroy((error) => {
+    if (error) {
+      return response.status(500).send("Failed to logout");
+    }
+    response.redirect("/");
+  });
+});
+
 //Mongo DB, server connection
 (async () => {
   try {

@@ -181,10 +181,13 @@ button.action-button:hover {
   background-color: rgb(255, 255, 255);
   margin-bottom: 20px;
   margin-top: 80px;
+  justify-content: space-between;
 }
 
 .navBar ul {
   display: flex;
+  width: 100%;
+  justify-content: space-between;
 }
 
 .navBar li {
@@ -204,6 +207,25 @@ button.action-button:hover {
 .navBar a:hover {
   color: rgb(88, 92, 100);
   transition: 0.7s;
+}
+
+#logout {
+  margin-left: auto;
+}
+
+#logout-button {
+  background: rgb(156, 203, 233);
+  color: white;
+  padding: 5px 20px;
+  border-radius: 5px;
+  text-align: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#logout-button:hover {
+  background: rgba(246, 246, 246, 0.8);
+  color: rgb(139, 173, 194);
+  cursor: pointer;
 }
 
 /* Footer */
