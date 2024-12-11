@@ -212,14 +212,28 @@ app.get("/createPoll", async (request, response) => {
 
 // Poll creation
 app.post("/createPoll", async (request, response) => {
-  const { question, options } = request.body;
-  const formattedOptions = Object.values(options).map((option) => ({
-    answer: option,
-    votes: 0,
-  }));
+  try {
+    const { question, option1, option2 } = request.body;
+    // const formattedOptions = Object.values(options).map((option) => ({
+    //   answer: option,
+    //   votes: 0,
+    // }));
 
-  const pollCreationError = onCreateNewPoll(question, formattedOptions);
-  //TODO: If an error occurs, what should we do?
+    //Add to Database
+    const newPoll = new Poll({ question, option1, option2 });
+    await newPoll.save();
+
+    //On Success
+    console.log("Poll added to database");
+    //Redirect to dashboard
+    response.redirect("/dashboard?success=true");
+
+    //If error occurs
+  } catch (err) {
+    response
+      .status(400)
+      .json({ errorMessage: "Error adding new poll", details: err.message });
+  }
 });
 
 //Logout
