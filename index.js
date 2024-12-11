@@ -165,7 +165,17 @@ app.get("/dashboard", async (request, response) => {
 });
 
 //Profile
-app.get("/profile", async (request, response) => {});
+app.get("/profile", async (request, response) => {
+  if (!request.session.user?.id) {
+    return response.redirect("/");
+  }
+
+  return response.render("profile", {
+    errorMessage: null,
+    username: request.session.user.username,
+    polls: [],
+  });
+});
 
 //Poll
 app.get("/createPoll", async (request, response) => {
