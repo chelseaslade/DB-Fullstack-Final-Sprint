@@ -178,15 +178,23 @@ app.post("/signup", async (request, response) => {
 
 //Dashboard
 app.get("/dashboard", async (request, response) => {
+  const successMessage = request.query.success
+    ? "Poll added successfully! "
+    : null;
+
   if (!request.session.user?.id) {
     return response.redirect("/");
   }
 
   return response.render("index/authenticatedIndex", {
+    successMessage,
+    errorMessage: null,
     username: request.session.user.username,
     polls: [],
   });
 });
+
+app.post("/dashboard", async (request, response) => {});
 
 //Profile
 app.get("/profile", async (request, response) => {
@@ -203,11 +211,7 @@ app.get("/profile", async (request, response) => {
 
 //Poll
 app.get("/createPoll", async (request, response) => {
-  if (!request.session.user?.id) {
-    return response.redirect("/");
-  }
-
-  return response.render("createPoll");
+  return response.render("createPoll", { errorMessage: null });
 });
 
 // Poll creation
