@@ -139,8 +139,9 @@ app.get("/signup", async (request, response) => {
 app.post("/signup", async (request, response) => {
   try {
     const { username, password } = request.body;
-    await bcrypt.hash(password, saltRounds);
-    const newUser = new User({ username, password });
+
+    const hashedPW = await bcrypt.hash(password, saltRounds);
+    const newUser = new User({ username, password: hashedPW });
     await newUser.save();
     //Redirect to login page
     response.redirect("/login?success=true");
