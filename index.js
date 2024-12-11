@@ -16,6 +16,13 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
 });
 
+const pollSchema = new mongoose.Schema({
+  question: { type: String, required: true },
+  option1: { type: String, required: true },
+  option2: { type: String, required: true },
+});
+
+const Poll = mongoose.model("Poll", pollSchema);
 const User = mongoose.model("User", userSchema);
 
 const app = express();
@@ -52,6 +59,23 @@ async function seedUsers() {
     }
   } catch (err) {
     console.error("Error seeding users", err);
+  }
+}
+
+//Testing purposes.... Seed Polls
+async function seedPolls() {
+  try {
+    const pollCount = await Poll.countDocuments();
+    if (pollCount === 0) {
+      //Add Polls
+      await Poll.insertMany([
+        { question: "Green or Blue?", option1: "Green", option2: "Blue" },
+        { question: "Cat or Dog?", option1: "Dog", option2: "Cat" },
+      ]);
+      console.log("Seeded polls collection");
+    }
+  } catch (err) {
+    console.error("Error seeding polls", err);
   }
 }
 
@@ -217,6 +241,8 @@ app.post("/logout", (request, response) => {
 
     // Seed test users after MongoDB connection
     await seedUsers();
+    //Seed test polls
+    await seedPolls();
 
     // Start the server
     app.listen(PORT, () => {
