@@ -142,6 +142,7 @@ body {
 .poll-container h2 {
   font-size: 24px;
   margin-bottom: 10px;
+  color: rgb(139, 173, 194);
 }
 
 .poll-options {

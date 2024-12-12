@@ -97,7 +97,12 @@ app.get("/", async (request, response) => {
     return response.redirect("/dashboard");
   }
 
-  response.render("index/unauthenticatedIndex", { errorMessage: null });
+  const polls = await Poll.find().lean();
+  let pollCount = polls.length;
+  response.render("index/unauthenticatedIndex", {
+    errorMessage: null,
+    pollCount,
+  });
 });
 
 //Login
@@ -186,12 +191,20 @@ app.get("/dashboard", async (request, response) => {
     return response.redirect("/");
   }
 
-  return response.render("index/authenticatedIndex", {
-    successMessage,
-    errorMessage: null,
-    username: request.session.user.username,
-    polls: [],
-  });
+  try {
+    //Fetch polls
+    const polls = await Poll.find().lean();
+
+    //Send to template
+    return response.render("index/authenticatedIndex", {
+      successMessage,
+      errorMessage: null,
+      username: request.session.user.username,
+      polls,
+    });
+  } catch (err) {
+    console.error("Error fetching polls", err);
+  }
 });
 
 app.post("/dashboard", async (request, response) => {});
@@ -227,9 +240,7 @@ app.post("/createPoll", async (request, response) => {
     const newPoll = new Poll({ question, option1, option2 });
     await newPoll.save();
 
-    //On Success
-    console.log("Poll added to database");
-    //Redirect to dashboard
+    //Redirect to dashboard on success
     response.redirect("/dashboard?success=true");
 
     //If error occurs
