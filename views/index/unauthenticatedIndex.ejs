@@ -1,11 +1,11 @@
-<!-- TODO: Header? -->
-<div class="main-content">
-    <h1>Welcome to the Voting App</h1>
+<%- include('../partials/header.ejs', { title: "Home" }) %>
+    <%- include('../partials/unauthNav.ejs') %>
 
-    <div class="button-container">
-        <a href="/signup" class="action-button">Signup</a>
-        <a href="/login" class="action-button">Login</a>
-    </div>
-</div>
-</body>
-</html>
+        <h1>Welcome to the Voting App</h1>
+        <p>There are currently <%= pollCount %> polls active.</p>
+
+        <div class="button-container">
+            <a href="/signup" class="action-button">Signup</a>
+            <a href="/login" class="action-button">Login</a>
+        </div>
+        <%- include('../partials/footer.ejs') %>

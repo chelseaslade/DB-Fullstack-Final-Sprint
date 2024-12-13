@@ -1,0 +1,9 @@
+<%- include('partials/header', { title: "Profile" }) %>
+    <%- include('./partials/authNav.ejs') %>
+        <h1>Profile</h1>
+        <h3>Hello, <%= username %>! </h3>
+        <p>You've voted in
+            <%= voteCount %>
+                polls!
+        </p>
+        <%- include('./partials/footer.ejs') %>
