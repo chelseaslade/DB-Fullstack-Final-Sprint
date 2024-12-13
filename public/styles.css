@@ -171,6 +171,14 @@ button.action-button:hover {
   cursor: pointer;
 }
 
+#pollLink {
+  color: rgb(139, 173, 194);
+}
+
+#pollLink a:visited {
+  color: rgb(80, 101, 114);
+}
+
 /* Navigation */
 
 .navBar {

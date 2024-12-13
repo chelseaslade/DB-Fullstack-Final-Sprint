@@ -2,8 +2,12 @@
     <%- include('./partials/authNav.ejs') %>
         <h1>Profile</h1>
         <h3>Hello, <%= username %>! </h3>
-        <p>You've voted in
-            <%= voteCount %>
-                polls!
-        </p>
-        <%- include('./partials/footer.ejs') %>
+        <% if (voteCount> 0) { %>
+            <p>You've voted in
+                <%= voteCount %>
+                    polls!
+            </p>
+            <% } else { %>
+                <p>You haven't voted in any polls yet. View polls <a href="/" id="pollLink">here</a>.</p>
+                <% } %>
+                    <%- include('./partials/footer.ejs') %>

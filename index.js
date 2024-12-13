@@ -11,19 +11,32 @@ const saltRounds = 10;
 //TODO: Update this URI to match your own MongoDB setup
 const MONGO_URI =
   "mongodb+srv://chelseajslade:8qLRHx$$VzLgV%40i@maincluster.016yf.mongodb.net/FINALSPRINT_USERS";
+
+//User Schema
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true },
   password: { type: String, required: true },
 });
 
+//Poll Schema (including vote tracking)
 const pollSchema = new mongoose.Schema({
   question: { type: String, required: true },
   option1: { type: String, required: true },
+  option1Votes: { type: Number, default: 0 },
   option2: { type: String, required: true },
+  option2Votes: { type: Number, default: 0 },
 });
+
+// //Vote Schema
+// const voteSchema = new mongoose.Schema({
+//   pollId: { type: mongoose.Schema.Types.ObjectId, ref: "Poll", required: true },
+//   username: { type: String, required: true },
+//   selectedOption: { type: String, required: true },
+// });
 
 const Poll = mongoose.model("Poll", pollSchema);
 const User = mongoose.model("User", userSchema);
+// const Vote = mongoose.model("Vote", voteSchema);
 
 const app = express();
 expressWs(app);
@@ -84,9 +97,7 @@ async function seedPolls() {
 app.ws("/ws", (socket, request) => {
   connectedClients.push(socket);
 
-  socket.on("message", async (message) => {
-    const data = JSON.parse(message);
-  });
+  socket.on("message", async (message) => {});
 
   socket.on("close", async (message) => {});
 });
@@ -215,10 +226,13 @@ app.get("/profile", async (request, response) => {
     return response.redirect("/");
   }
 
+  let voteCount = 0;
+
   return response.render("profile", {
     errorMessage: null,
     username: request.session.user.username,
     polls: [],
+    voteCount,
   });
 });
 
