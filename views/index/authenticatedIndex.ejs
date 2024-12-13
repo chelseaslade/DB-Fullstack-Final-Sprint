@@ -17,12 +17,20 @@
                                     <h2>
                                         <%= poll.question %>
                                     </h2>
-                                    <ul class="poll-options">
-                                        <li>Option 1: <%= poll.option1 %>
-                                        </li>
-                                        <li>Option 2: <%= poll.option2 %>
-                                        </li>
-                                    </ul>
+                                    <form class="pollForm">
+                                        <ul class="poll-options">
+                                            <li>Option 1: <%= poll.option1 %>
+                                                    <input type="hidden" name="poll-id" value="<%= poll.id %>">
+                                                    <button type="submit" name="option" value="option1"
+                                                        class="voteButton">Vote</button>
+                                            </li>
+                                            <li>Option 2: <%= poll.option2 %>
+                                                    <input type="hidden" name="poll-id" value="<%= poll.id %>">
+                                                    <button type="submit" name="option" value="option2"
+                                                        class="voteButton">Vote</button>
+                                            </li>
+                                        </ul>
+                                    </form>
                                 </li>
                                 <% }) %>
                         </ul>

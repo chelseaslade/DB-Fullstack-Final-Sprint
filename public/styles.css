@@ -179,6 +179,17 @@ button.action-button:hover {
   color: rgb(80, 101, 114);
 }
 
+.voteButton {
+  background: rgb(156, 203, 233);
+  color: white;
+  text-decoration: none;
+  padding: 5px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  text-align: center;
+  margin-left: 10px;
+}
+
 /* Navigation */
 
 .navBar {

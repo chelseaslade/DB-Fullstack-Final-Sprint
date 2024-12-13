@@ -27,16 +27,16 @@ const pollSchema = new mongoose.Schema({
   option2Votes: { type: Number, default: 0 },
 });
 
-// //Vote Schema
-// const voteSchema = new mongoose.Schema({
-//   pollId: { type: mongoose.Schema.Types.ObjectId, ref: "Poll", required: true },
-//   username: { type: String, required: true },
-//   selectedOption: { type: String, required: true },
-// });
+//Vote Schema
+const voteSchema = new mongoose.Schema({
+  pollId: { type: mongoose.Schema.Types.ObjectId, ref: "Poll", required: true },
+  username: { type: String, required: true },
+  selectedOption: { type: String, required: true },
+});
 
 const Poll = mongoose.model("Poll", pollSchema);
 const User = mongoose.model("User", userSchema);
-// const Vote = mongoose.model("Vote", voteSchema);
+const Vote = mongoose.model("Vote", voteSchema);
 
 const app = express();
 expressWs(app);
@@ -97,9 +97,34 @@ async function seedPolls() {
 app.ws("/ws", (socket, request) => {
   connectedClients.push(socket);
 
-  socket.on("message", async (message) => {});
+  socket.on("message", async (message) => {
+    const { pollId, selectedOption, username } = JSON.parse(message);
 
-  socket.on("close", async (message) => {});
+    try {
+      //Check if logged in
+      if (!username) return;
+
+      //Check for previous vote
+      const existingVote = await Vote.findOne({ pollId, username });
+      if (existingVote) return;
+
+      //Save vote
+      const newVote = new Vote({ pollId, selectedOption, username });
+      await newVote.save();
+
+      //Update connected clients
+      const updatedPoll = await Poll.findById(pollId).lean();
+      connectedClients.forEach((client) => {
+        client.send(JSON.stringify({ type: "NEW_VOTE", poll: updatedPoll }));
+      });
+    } catch (err) {
+      console.error("Error processing vote with WebSockets.", err);
+    }
+  });
+
+  socket.on("close", async () => {
+    connectedClients = connectedClients.filter((client) => client !== socket);
+  });
 });
 
 //Render index if unauthenticated, redirect to dashboard if logged in
@@ -203,8 +228,12 @@ app.get("/dashboard", async (request, response) => {
   }
 
   try {
+    //Get username of logged in user
+    const username = request.session.user.username;
     //Fetch polls
     const polls = await Poll.find().lean();
+    //Fetch votes
+    const userVotes = await Vote.find({ username }).lean();
 
     //Send to template
     return response.render("index/authenticatedIndex", {
@@ -212,9 +241,11 @@ app.get("/dashboard", async (request, response) => {
       errorMessage: null,
       username: request.session.user.username,
       polls,
+      userVotes,
     });
   } catch (err) {
     console.error("Error fetching polls", err);
+    response.status(500).send("Error loading dashboard.");
   }
 });
 
@@ -226,14 +257,22 @@ app.get("/profile", async (request, response) => {
     return response.redirect("/");
   }
 
-  let voteCount = 0;
+  try {
+    //Count polls voted in
+    // let voteCount = await Vote.countDocuments({ username });
+    const voteCount = 0;
 
-  return response.render("profile", {
-    errorMessage: null,
-    username: request.session.user.username,
-    polls: [],
-    voteCount,
-  });
+    //Return profile
+    return response.render("profile", {
+      errorMessage: null,
+      username: request.session.user.username,
+      polls: [],
+      voteCount,
+    });
+  } catch (err) {
+    console.error("Error generating user profile:", err);
+    response.status(500).send("Error generating user profile.");
+  }
 });
 
 //Poll
@@ -245,10 +284,6 @@ app.get("/createPoll", async (request, response) => {
 app.post("/createPoll", async (request, response) => {
   try {
     const { question, option1, option2 } = request.body;
-    // const formattedOptions = Object.values(options).map((option) => ({
-    //   answer: option,
-    //   votes: 0,
-    // }));
 
     //Add to Database
     const newPoll = new Poll({ question, option1, option2 });
@@ -274,6 +309,39 @@ app.post("/logout", (request, response) => {
     }
     response.redirect("/");
   });
+});
+
+//Vote
+app.post("/vote", async (request, response) => {
+  try {
+    //Get data
+    const { pollId, selectedOption } = request.body;
+    const username = request.session.user?.username;
+
+    //Check if logged in
+    if (!username) {
+      return response
+        .status(401)
+        .json({ errorMessage: "No user logged in. Please log in to vote." });
+    }
+
+    //Check if previously voted in poll
+    const existingVote = await Vote.findOne({ pollId, username });
+    if (existingVote) {
+      return response
+        .status(400)
+        .json({ errorMessage: "You have already voted in this poll." });
+    }
+
+    //Save votes to DB
+    const newVote = new Vote({ pollId, username, selectedOption });
+    await newVote.save();
+
+    response.json({ successMessage: "Your vote has been recorded." });
+  } catch (err) {
+    console.error("Error processing vote:", err);
+    response.status(500).json({ errorMessage: "Error processing vote." });
+  }
 });
 
 //Mongo DB, server connection
@@ -314,20 +382,4 @@ async function onCreateNewPoll(question, pollOptions) {
   //TODO: Tell all connected sockets that a new poll was added
 
   return null;
-}
-
-/**
- * Handles processing a new vote on a poll
- *
- * This function isn't necessary and should be removed if it's not used, but it's left as a hint to try and help give
- * an idea of how you might want to handle incoming votes
- *
- * @param {string} pollId The ID of the poll that was voted on
- * @param {string} selectedOption Which option the user voted for
- */
-async function onNewVote(pollId, selectedOption) {
-  try {
-  } catch (error) {
-    console.error("Error updating poll:", error);
-  }
 }
