@@ -1,3 +1,4 @@
+/* Main Styling */
 body {
   background-image: url(https://images.unsplash.com/photo-1695390470264-86847b15600b?q=80&w=2148&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D);
   background-size: cover;
@@ -128,6 +129,7 @@ body {
   margin-top: 0px;
 }
 
+/*Poll Styling */
 .poll-container {
   background-color: #fff;
   color: #333;
@@ -190,8 +192,13 @@ button.action-button:hover {
   margin-left: 10px;
 }
 
-/* Navigation */
+/* Profile */
+#voteCountMessage {
+  background-color: white;
+  padding: 10px;
+}
 
+/* Navigation */
 .navBar {
   height: 40px;
   width: 100%;
@@ -228,6 +235,7 @@ button.action-button:hover {
   transition: 0.7s;
 }
 
+/* Logout */
 #logout {
   margin-left: auto;
 }
@@ -248,7 +256,6 @@ button.action-button:hover {
 }
 
 /* Footer */
-
 .footer {
   height: 20px;
   width: 100%;
