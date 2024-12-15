@@ -324,7 +324,6 @@ app.get("/profile", async (request, response) => {
     //Count polls voted in
     let username = request.session.user.username;
     let voteCount = await Vote.countDocuments({ username });
-    // const voteCount = 0;
 
     //Return profile
     return response.render("profile", {
