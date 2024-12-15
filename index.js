@@ -115,14 +115,6 @@ app.ws("/ws", (socket, request) => {
   console.log("New WebSocket connection established");
   connectedClients.push(socket);
 
-  const mongoose = require("mongoose");
-
-  // Check if pollId is a valid ObjectId
-  if (!mongoose.Types.ObjectId.isValid(pollId)) {
-    console.error("Invalid ObjectId:", pollId);
-    return; // Handle invalid ObjectId error
-  }
-
   socket.on("message", async (message) => {
     try {
       console.log("Received message:", message);
@@ -130,14 +122,6 @@ app.ws("/ws", (socket, request) => {
 
       // Validate required fields
       const { pollId, option, username } = data;
-
-      if (!pollId || !option) {
-        console.error("Invalid vote data received:", message);
-        return; // Optionally, send an error back to the client
-      }
-
-      // Assuming pollId is supposed to be an ObjectId in MongoDB
-      const objectId = mongoose.Types.ObjectId(pollId); // This will throw an error if it's invalid
 
       if (!username || !pollId || !option) {
         console.error("Invalid message data: Missing fields");
@@ -161,7 +145,7 @@ app.ws("/ws", (socket, request) => {
         );
       }
 
-      // Update votes
+      // Update votes in Polls database
       if (option === "option1") {
         poll.option1Votes += 1;
       } else if (option === "option2") {
@@ -177,6 +161,14 @@ app.ws("/ws", (socket, request) => {
       }
 
       await poll.save();
+
+      //Update vote database
+      const newVote = new Vote({
+        pollId: pollId,
+        username: username,
+        selectedOption: option,
+      });
+      await newVote.save();
 
       // Broadcast updated vote count to all clients
       const voteUpdate = {
@@ -330,13 +322,13 @@ app.get("/profile", async (request, response) => {
 
   try {
     //Count polls voted in
-    // let voteCount = await Vote.countDocuments({ username });
-    const voteCount = 0;
+    let username = request.session.user.username;
+    let voteCount = await Vote.countDocuments({ username });
 
     //Return profile
     return response.render("profile", {
       errorMessage: null,
-      username: request.session.user.username,
+      username,
       polls: [],
       voteCount,
     });
